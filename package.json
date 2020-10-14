@@ -8,9 +8,13 @@
     "@testing-library/user-event": "^7.1.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
+    "react-relay": "^10.0.1",
+    "react-scripts": "3.4.3",
+    "relay-runtime": "^10.0.1"
   },
   "scripts": {
+    "relay": "relay-compiler --src ./src --schema ./schema.graphql",
+    "prestart": "yarn run relay --watch",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -30,5 +34,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "babel-plugin-relay": "^10.0.1",
+    "graphql": "^15.3.0",
+    "relay-compiler": "^10.0.1",
+    "relay-config": "^10.0.1"
   }
 }

@@ -1,0 +1,30 @@
+input MessageInput {
+  title: String
+  content: String
+}
+
+type Message {
+  id: String
+  title: String
+  content: String
+}
+
+type Messages {
+  list: [Message]
+}
+
+type Result {
+  success: Boolean
+  status: String
+}
+
+type Query {
+  allMessage(userId: String): Messages
+  message(userId: String, messageId: String): Message
+}
+
+type Mutation {
+  createMessage(userId: String, input: MessageInput): Message
+  updateMessage(userId: String, messageId: String, input: MessageInput): Message
+  removeMessage(userId: String, messageId: String): Result
+}

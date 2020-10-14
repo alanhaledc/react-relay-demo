@@ -1,26 +1,30 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { createFragmentContainer } from 'react-relay';
+import graphql from 'babel-plugin-relay/macro';
 
-function App() {
+const App = ({ relay, allMessage }) => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ol style={{ margin: '10px' }}>
+      {allMessage?.list.map(({ message, key }) => (
+        <li key="item.id">
+          <p>title: {message.title}</p>
+          <p>content: {message.content}</p>
+        </li>
+      ))}
+    </ol>
   );
-}
+};
 
-export default App;
+export default createFragmentContainer(App, {
+  allMessage: graphql`
+    fragment App_allMessage on Message {
+      list {
+        id
+        title
+        content
+      }
+    }
+  `,
+});
+
+// export default App;
