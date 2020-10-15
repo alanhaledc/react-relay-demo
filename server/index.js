@@ -4,40 +4,74 @@ const { buildSchema } = require('graphql');
 const cors = require('cors');
 
 const schema = buildSchema(`
-  input MessageInput {
-    title: String
-    content: String
-  }
-
   type Message {
     id: String
     title: String
     content: String
   }
 
-  type Messages {
-    list: [Message]
+  type User {
+    userId: String
+    messageList: [Message]
   }
 
-  type Result {
-    success: Boolean
-    status: String
+  input MessageInput {
+    userId: String
+    id: String
+  }
+
+  type MessagePayload {
+    user: User 
+    message: Message
   }
 
   type Query {
-    allMessage(userId: String): Messages
-    message(userId: String, messageId: String): Message
+    user(userId: String): User
+    message(input: MessageInput): MessagePayload
   }
 
   type Mutation {
-    createMessage(userId: String, input: MessageInput): Message
-    updateMessage(userId: String, messageId: String, input: MessageInput): Message
-    removeMessage(userId: String, messageId: String): Result
+    addMessage(input: AddMessageInput): AddMessagePayload
+    updateMessage(input: UpdateMessageInput): UpdateMessagePayload
+    removeMessage(input: RemoveMessageInput): RemoveMessagePayload
+  }
+
+  input AddMessageInput {
+    userId: String
+    title: String
+    content: String
+  }
+
+  type AddMessagePayload {
+    user: User
+    message: Message
+  }
+
+  input UpdateMessageInput {
+    userId: String
+    id: String
+    title: String
+    content: String
+  }
+
+  type UpdateMessagePayload {
+    user: User
+    message: Message
+  }
+
+  input RemoveMessageInput {
+    userId: String
+    id: String
+  }
+
+  type RemoveMessagePayload {
+    user: User
+    message: Message
   }
 `);
 
 class Message {
-  constructor(id, { title, content }) {
+  constructor(id, title, content) {
     this.id = id;
     this.title = title;
     this.content = content;
@@ -45,75 +79,99 @@ class Message {
 }
 
 const messageById = new Map();
-const messageIdsByUserId = new Map();
-
+const idsByUserId = new Map();
 let tmpId = 0;
 
-function addMessage({ title, content }) {
-  const messageId = `msg${tmpId++}`;
-  const message = new Message(messageId, { title, content });
-  messageById.set(messageId, message);
-  const userId = '140';
-  messageIdsByUserId.set(
-    userId,
-    (messageIdsByUserId.get(userId) ?? []).concat(messageId)
-  );
-}
-
-addMessage({ title: 'python', content: 'study python' });
-addMessage({ title: 'typescript', content: 'study typescript' });
-
-const root = {
-  allMessage({ userId }) {
-    const messageIds = messageIdsByUserId.get(userId);
-    const messages = [];
-    for (const messageId of messageIds) {
-      const message = messageById.get(messageId);
-      messages.push(message);
+const rootValue = {
+  user({ userId }) {
+    const ids = idsByUserId.get(userId);
+    const messageList = [];
+    for (const id of ids) {
+      const message = messageById.get(id);
+      messageList.push(message);
     }
-    return { list: messages };
-  },
-  message: ({ userId, messageId }) => {
-    if (!messageById.has(messageId)) {
-      throw new Error('no message exists with id ' + messageId);
-    }
-    return messageById.get(messageId);
-  },
-  createMessage: ({ userId, input }) => {
-    const id = `msg${tmpId++}`;
-    const message = new Message(id, input);
-    messageById.set(id, message);
-    const messageIds = messageIdsByUserId.get(userId);
-    messageIds.push(id);
-    return message;
-  },
-  updateMessage: ({ userId, messageId, input }) => {
-    if (!messageById.has(messageId)) {
-      throw new Error('no message exists with id ' + messageId);
-    }
-    const message = new Message(messageId, input);
-    messageById.set(messageId, message);
-    return message;
-  },
-  removeMessage: ({ userId, messageId }) => {
-    if (!messageById.has(messageId)) {
-      throw new Error('no message exists with id ' + messageId);
-    }
-    messageById.delete(messageId);
     return {
-      success: true,
-      status: '200',
+      userId,
+      messageList,
+    };
+  },
+
+  message({ userId, id }) {
+    if (!messageById.has(id)) {
+      throw new Error('no message exists with id ' + id);
+    }
+    const message = messageById.get(id);
+    return {
+      user: this.user({ userId }),
+      message,
+    };
+  },
+
+  addMessage({ userId, title, content }) {
+    const id = `msg${tmpId++}`;
+    const message = new Message(id, title, content);
+    messageById.set(id, message);
+    const ids = idsByUserId.get(userId) || [];
+    idsByUserId.set(userId, ids.concat(id));
+    return {
+      user: this.user({ userId }),
+      message,
+    };
+  },
+
+  updateMessage({ userId, id, title, content }) {
+    const ids = idsByUserId.get(userId);
+    if (!ids.include(id)) {
+      throw new Error('no message exists with id ' + id);
+    }
+    const message = new Message(id, title, content);
+    message.set(id, message);
+    return {
+      user: this.user({ userId }),
+      message,
+    };
+  },
+
+  removeMessage({ userId, id }) {
+    const ids = idsByUserId.get(userId);
+    if (!ids.include(id)) {
+      throw new Error('no message exists with id ' + id);
+    }
+    const message = messageById.get(id);
+    const index = ids.indexOf(id);
+    if (index > -1) {
+      ids.splice(index, 1);
+    }
+    messageById.delete(id);
+    return {
+      user: this.user({ userId }),
+      message,
     };
   },
 };
+
+const USER_ID = '140';
+
+const addMsg = ({ title, content }) => {
+  const id = `msg${tmpId++}`;
+  const message = new Message(id, title, content);
+  messageById.set(id, message);
+  const userId = USER_ID;
+  const ids = idsByUserId.get(userId) || [];
+  idsByUserId.set(userId, ids.concat(id));
+};
+
+addMsg({title: 'JavaScript', content: 'learn JavaScript'})
+addMsg({title: 'TypeScript', content: 'learn TypeScript'})
 
 const app = express();
 app.use(cors());
 app.use(
   '/graphql',
   graphqlHTTP({
-    schema: schema,
-    rootValue: root,
+    schema,
+    rootValue,
+    pretty: true,
     graphiql: true,
   })
 );
