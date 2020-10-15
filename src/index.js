@@ -33,6 +33,7 @@ ReactDOM.render(
       query srcQuery($userId: String) {
         allMessage(userId: $userId) {
           list {
+            id
             title
             content
           }

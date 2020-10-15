@@ -12,9 +12,11 @@ import type { FragmentReference } from "relay-runtime";
 declare export opaque type App_allMessage$ref: FragmentReference;
 declare export opaque type App_allMessage$fragmentType: App_allMessage$ref;
 export type App_allMessage = {|
-  +id: ?string,
-  +title: ?string,
-  +content: ?string,
+  +list: ?$ReadOnlyArray<?{|
+    +id: ?string,
+    +title: ?string,
+    +content: ?string,
+  |}>,
   +$refType: App_allMessage$ref,
 |};
 export type App_allMessage$data = App_allMessage;
@@ -35,29 +37,40 @@ const node/*: ReaderFragment*/ = {
     {
       "alias": null,
       "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "title",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "content",
+      "concreteType": "Message",
+      "kind": "LinkedField",
+      "name": "list",
+      "plural": true,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "id",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "title",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "content",
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     }
   ],
-  "type": "Message",
+  "type": "Messages",
   "abstractKey": null
 };
 // prettier-ignore
-(node/*: any*/).hash = '8b0744edfa6f7b888b34b25718b102e8';
+(node/*: any*/).hash = 'afd952d7747375c3853311a8c97e9b55';
 
 module.exports = node;

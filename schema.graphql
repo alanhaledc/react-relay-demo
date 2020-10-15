@@ -1,30 +1,68 @@
-input MessageInput {
-  title: String
-  content: String
-}
-
 type Message {
   id: String
   title: String
   content: String
 }
 
-type Messages {
-  list: [Message]
+type MessageInput {
+  userId: String
+  id: String
 }
 
-type Result {
-  success: Boolean
-  status: String
+type MessagePayload {
+  userId: String
+  message: Message
+}
+
+type UserInput {
+  userId: String
+}
+
+type UserPayload {
+  userId: String
+  messages: [message]
 }
 
 type Query {
-  allMessage(userId: String): Messages
-  message(userId: String, messageId: String): Message
+  messages(input: messagesInput): messagesPayload
+  message(input: messageInput): messagePayload
 }
 
 type Mutation {
-  createMessage(userId: String, input: MessageInput): Message
-  updateMessage(userId: String, messageId: String, input: MessageInput): Message
-  removeMessage(userId: String, messageId: String): Result
+  addMessage(input: AddMessageInput): AddMessagePayload
+  updateMessage(input: UpdateMessageInput): UpdateMessagePayload
+  removeMessage(input: RemoveMessageInput): RemoveMessagePayload
+}
+
+type AddMessageInput {
+  userId: String
+  title: String
+  content: String
+}
+
+type AddMessagePayload {
+  user: User
+  message: Message
+}
+
+type UpdateMessageInput {
+  userId: String
+  id: String
+  title: String
+  content: String
+}
+
+type UpdateMessagePayload {
+  user: User
+  message: Message
+}
+
+type RemoveMessageInput {
+  userId: String
+  id: String
+}
+
+type RemoveMessagePayload {
+  user: User
+  message: Message
 }
