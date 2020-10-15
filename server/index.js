@@ -96,7 +96,7 @@ const rootValue = {
     };
   },
 
-  message({ userId, id }) {
+  message({ input: { userId, id } }) {
     if (!messageById.has(id)) {
       throw new Error('no message exists with id ' + id);
     }
@@ -107,7 +107,7 @@ const rootValue = {
     };
   },
 
-  addMessage({ userId, title, content }) {
+  addMessage({ input: { userId, title, content } }) {
     const id = `msg${tmpId++}`;
     const message = new Message(id, title, content);
     messageById.set(id, message);
@@ -119,25 +119,24 @@ const rootValue = {
     };
   },
 
-  updateMessage({ userId, id, title, content }) {
-    const ids = idsByUserId.get(userId);
-    if (!ids.include(id)) {
+  updateMessage({ input: { userId, id, title, content } }) {
+    if (!messageById.has(id)) {
       throw new Error('no message exists with id ' + id);
     }
     const message = new Message(id, title, content);
-    message.set(id, message);
+    messageById.set(id, message);
     return {
       user: this.user({ userId }),
       message,
     };
   },
 
-  removeMessage({ userId, id }) {
-    const ids = idsByUserId.get(userId);
-    if (!ids.include(id)) {
+  removeMessage({ input: { userId, id } }) {
+    if (!messageById.has(id)) {
       throw new Error('no message exists with id ' + id);
     }
     const message = messageById.get(id);
+    const ids = idsByUserId.get(userId);
     const index = ids.indexOf(id);
     if (index > -1) {
       ids.splice(index, 1);
@@ -161,8 +160,8 @@ const addMsg = ({ title, content }) => {
   idsByUserId.set(userId, ids.concat(id));
 };
 
-addMsg({title: 'JavaScript', content: 'learn JavaScript'})
-addMsg({title: 'TypeScript', content: 'learn TypeScript'})
+addMsg({ title: 'JavaScript', content: 'learn JavaScript' });
+addMsg({ title: 'TypeScript', content: 'learn TypeScript' });
 
 const app = express();
 app.use(cors());
