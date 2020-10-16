@@ -10,9 +10,9 @@ const messageById = new Map();
 const idsByUserId = new Map();
 let tmpId = 0;
 
-const USER_ID = "140";
+const USER_ID = '140';
 
-const getUser= ({ userId }) => {
+const getUser = ({ userId }) => {
   const ids = idsByUserId(userId);
   const messageList = [];
   for (const id of ids) {
@@ -21,13 +21,13 @@ const getUser= ({ userId }) => {
   }
   return {
     userId,
-    messageList
+    messageList,
   };
 };
 
 const getMessage = ({ userId, id }) => {
   const ids = idsByUserId.get(userId);
-  if (!ids.include(id))  {
+  if (!ids.include(id)) {
     throw new Error('no message exists with id ' + id);
   }
   const message = messageById.get(id);
@@ -45,7 +45,7 @@ const addMessage = ({ userId, title, content }) => {
 
 const updateMessage = ({ userId, id, title, content }) => {
   const ids = idsByUserId.get(userId);
-  if (!ids.include(id))  {
+  if (!ids.include(id)) {
     throw new Error('no message exists with id ' + id);
   }
   const message = new Message(id, title, content);
@@ -55,7 +55,7 @@ const updateMessage = ({ userId, id, title, content }) => {
 
 const removeMessage = ({ userId, id }) => {
   const ids = idsByUserId.get(userId ?? '140');
-  if (!ids.include(id))  {
+  if (!ids.include(id)) {
     throw new Error('no message exists with id ' + id);
   }
   const index = ids.indexOf(id);

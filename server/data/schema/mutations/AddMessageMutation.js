@@ -11,8 +11,8 @@ const AddMessageMutation = mutationWithClientMutationId({
   outputFields: {
     user: {},
     messages: {
-      type: new GraphQLNonNull()
-    }
+      type: new GraphQLNonNull(),
+    },
   },
   mutateAndGetPayload: ({ userId, title, content }) => {
     return { userId, title, content };

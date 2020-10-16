@@ -4,7 +4,7 @@ const { getUser } = require('../../database');
 const UserQuery = {
   type: GraphQLString,
   args: {
-    id: {type: GraphQLString}
+    id: { type: GraphQLString },
   },
   resolve: ({ userId }) => getUser({ userId }),
 };
