@@ -12,12 +12,13 @@ export type srcQueryVariables = {|
   userId?: ?string
 |};
 export type srcQueryResponse = {|
-  +allMessage: ?{|
-    +list: ?$ReadOnlyArray<?{|
+  +user: ?{|
+    +userId: ?string,
+    +messageList: ?$ReadOnlyArray<?{|
       +id: ?string,
       +title: ?string,
       +content: ?string,
-    |}>
+    |}>,
   |}
 |};
 export type srcQuery = {|
@@ -31,8 +32,9 @@ export type srcQuery = {|
 query srcQuery(
   $userId: String
 ) {
-  allMessage(userId: $userId) {
-    list {
+  user(userId: $userId) {
+    userId
+    messageList {
       id
       title
       content
@@ -59,17 +61,24 @@ v1 = [
         "variableName": "userId"
       }
     ],
-    "concreteType": "Messages",
+    "concreteType": "User",
     "kind": "LinkedField",
-    "name": "allMessage",
+    "name": "user",
     "plural": false,
     "selections": [
       {
         "alias": null,
         "args": null,
+        "kind": "ScalarField",
+        "name": "userId",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
         "concreteType": "Message",
         "kind": "LinkedField",
-        "name": "list",
+        "name": "messageList",
         "plural": true,
         "selections": [
           {
@@ -118,16 +127,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "3fa928cedfe42a9727cbd61a42203677",
+    "cacheID": "6f9db712e31f9f83e19de34f9a3c73fe",
     "id": null,
     "metadata": {},
     "name": "srcQuery",
     "operationKind": "query",
-    "text": "query srcQuery(\n  $userId: String\n) {\n  allMessage(userId: $userId) {\n    list {\n      id\n      title\n      content\n    }\n  }\n}\n"
+    "text": "query srcQuery(\n  $userId: String\n) {\n  user(userId: $userId) {\n    userId\n    messageList {\n      id\n      title\n      content\n    }\n  }\n}\n"
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = 'b6f506271d13110f38f9cd83a6e3fdec';
+(node/*: any*/).hash = '10f037ec7d8f1efc307f9007d3a078d4';
 
 module.exports = node;
