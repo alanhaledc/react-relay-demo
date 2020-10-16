@@ -6,13 +6,14 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-relay": "^10.0.1",
     "react-scripts": "3.4.3",
     "relay-runtime": "^10.0.1"
   },
   "scripts": {
+    "server": "nodemon server/index.js",
     "relay": "relay-compiler --src ./src --schema ./schema.graphql",
     "prestart": "yarn run relay --watch",
     "start": "react-scripts start",
@@ -38,6 +39,8 @@
   "devDependencies": {
     "babel-plugin-relay": "^10.0.1",
     "graphql": "^15.3.0",
+    "nodemon": "^2.0.5",
+    "prettier": "^2.1.2",
     "relay-compiler": "^10.0.1",
     "relay-config": "^10.0.1"
   }
