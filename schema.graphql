@@ -4,28 +4,24 @@ type Message {
   content: String
 }
 
-type MessageInput {
+type User {
+  userId: String
+  messageList: [Message]
+}
+
+input MessageInput {
   userId: String
   id: String
 }
 
 type MessagePayload {
-  userId: String
+  user: User
   message: Message
 }
 
-type UserInput {
-  userId: String
-}
-
-type UserPayload {
-  userId: String
-  messages: [message]
-}
-
 type Query {
-  messages(input: messagesInput): messagesPayload
-  message(input: messageInput): messagePayload
+  user(userId: String): User
+  message(input: MessageInput): MessagePayload
 }
 
 type Mutation {
@@ -34,7 +30,7 @@ type Mutation {
   removeMessage(input: RemoveMessageInput): RemoveMessagePayload
 }
 
-type AddMessageInput {
+input AddMessageInput {
   userId: String
   title: String
   content: String
@@ -45,7 +41,7 @@ type AddMessagePayload {
   message: Message
 }
 
-type UpdateMessageInput {
+input UpdateMessageInput {
   userId: String
   id: String
   title: String
@@ -57,7 +53,7 @@ type UpdateMessagePayload {
   message: Message
 }
 
-type RemoveMessageInput {
+input RemoveMessageInput {
   userId: String
   id: String
 }
