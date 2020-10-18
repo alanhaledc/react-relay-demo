@@ -1,17 +1,41 @@
 type Message {
-  id: String
+  id: ID
   title: String
   content: String
 }
 
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type MessageConnection {
+  edges: [MessageEdge]
+  pageInfo: PageInfo
+}
+
+type MessageEdge {
+  cursor: String
+  node: Message
+}
+
 type User {
   userId: String
-  messageList: [Message]
+  id: ID
+  messages(
+    status: String = "any"
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): MessageConnection
 }
 
 input MessageInput {
-  userId: String
-  id: String
+  userId: ID
+  id: ID
 }
 
 type MessagePayload {
@@ -25,25 +49,25 @@ type Query {
 }
 
 type Mutation {
-  addMessage(input: AddMessageInput): AddMessagePayload
-  updateMessage(input: UpdateMessageInput): UpdateMessagePayload
-  removeMessage(input: RemoveMessageInput): RemoveMessagePayload
+  addMessage(input: AddMessageInput!): AddMessagePayload
+  updateMessage(input: UpdateMessageInput!): UpdateMessagePayload
+  removeMessage(input: RemoveMessageInput!): RemoveMessagePayload
 }
 
 input AddMessageInput {
-  userId: String
+  userId: ID
   title: String
   content: String
 }
 
 type AddMessagePayload {
   user: User
-  message: Message
+  messageEdge: MessageEdge
 }
 
 input UpdateMessageInput {
-  userId: String
-  id: String
+  userId: ID
+  id: ID
   title: String
   content: String
 }
@@ -54,11 +78,11 @@ type UpdateMessagePayload {
 }
 
 input RemoveMessageInput {
-  userId: String
-  id: String
+  userId: ID
+  id: ID
 }
 
 type RemoveMessagePayload {
   user: User
-  message: Message
+  deleteMessageId: ID
 }
