@@ -1,21 +1,25 @@
-const { GraphQLSchema, GraphQLObjectType, GraphQLString } = require('graphql');
+const { GraphQLSchema, GraphQLObjectType } = require('graphql');
+const { nodeField } = require('./nodes');
 const { UserQuery } = require('./queries/UserQuery');
 const { MessageQuery } = require('./queries/MessageQuery');
+const { AddMessageMutation } = require('./mutations/AddMessageMutation');
+const { UpdateMessageMutation } = require('./mutations/UpdateMessageMutation');
+const { RemoveMessageMutation } = require('./mutations/RemoveMessageMutation');
 
 const Query = new GraphQLObjectType({
   name: 'Query',
   fields: {
     user: UserQuery,
     message: MessageQuery,
+    node: nodeField,
   },
 });
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
-    addMessage: {
-      type: GraphQLString,
-      resolve: (newMsg) => newMsg,
-    },
+    addMessage: AddMessageMutation,
+    updateMessage: UpdateMessageMutation,
+    removeMessage: RemoveMessageMutation,
   },
 });
 
@@ -24,4 +28,6 @@ const schema = new GraphQLSchema({
   mutation: Mutation,
 });
 
-module.exports = schema;
+module.exports = {
+  schema,
+};

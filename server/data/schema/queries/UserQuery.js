@@ -1,12 +1,13 @@
-const { GraphQLString } = require('graphql');
+const { GraphQLString, GraphQLNonNull } = require('graphql');
 const { getUser } = require('../../database');
+const { GraphQLUser } = require('../nodes');
 
 const UserQuery = {
-  type: GraphQLString,
+  type: new GraphQLNonNull(GraphQLUser),
   args: {
-    id: { type: GraphQLString },
+    userId: { type: GraphQLString },
   },
-  resolve: ({ userId }) => getUser({ userId }),
+  resolve: (root = {}, { userId }) => getUser(userId),
 };
 
 module.exports = {

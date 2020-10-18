@@ -6,76 +6,73 @@ class Message {
   }
 }
 
-const messageById = new Map();
-const idsByUserId = new Map();
-let tmpId = 0;
+class User {
+  constructor(id) {
+    this.id = id;
+  }
+}
 
 const USER_ID = '140';
 
-const getUser = ({ userId }) => {
-  const ids = idsByUserId(userId);
-  const messageList = [];
-  for (const id of ids) {
-    const message = idsByUserId.get(id);
-    messageList.push(message);
-  }
-  return {
-    userId,
-    messageList,
-  };
+// user mock
+const usersById = new Map([[USER_ID, new User(USER_ID)]]);
+
+// message mock
+const messagesById = new Map();
+const messageIdsByUser = new Map([[USER_ID, []]]);
+
+let tmpId = 0;
+
+const getUser = (id) => {
+  const user = usersById.get(id);
+  if (!user) throw new Error(`Invariant exception, User ${id} not found`);
+  return user;
 };
 
-const getMessage = ({ userId, id }) => {
-  const ids = idsByUserId.get(userId);
-  if (!ids.include(id)) {
-    throw new Error('no message exists with id ' + id);
-  }
-  const message = messageById.get(id);
+const getMessageIds = (id) => {
+  return messageIdsByUser.get(id) || [];
+};
+
+const getMessage = (id) => {
+  const message = messagesById.get(id);
+  if (!message) throw new Error(`Invariant exception, Message ${id} not found`);
   return message;
 };
 
-const addMessage = ({ userId, title, content }) => {
-  const id = `msg${tmpId++}`;
-  const message = new Message(id, title, content);
-  messageById.set(id, message);
-  const ids = idsByUserId.get(userId ?? '140') || [];
-  idsByUserId.set(userId, ids.concat(id));
-  return message;
+const getMessages = () => {
+  const messageIds = getMessageIds(USER_ID);
+  const messages = messageIds.map(getMessage);
+  return messages;
 };
 
-const updateMessage = ({ userId, id, title, content }) => {
-  const ids = idsByUserId.get(userId);
-  if (!ids.include(id)) {
-    throw new Error('no message exists with id ' + id);
-  }
-  const message = new Message(id, title, content);
-  message.set(id, message);
-  return message;
+const addMessage = (title, content) => {
+  const message = new Message(`${tmpId++}`, title, content);
+  messagesById.set(message.id, message);
+  const messageIds = getMessageIds(USER_ID);
+  messageIdsByUser.set(USER_ID, messageIds.concat(message.id));
+  return message.id;
 };
 
-const removeMessage = ({ userId, id }) => {
-  const ids = idsByUserId.get(userId ?? '140');
-  if (!ids.include(id)) {
-    throw new Error('no message exists with id ' + id);
-  }
-  const index = ids.indexOf(id);
-  if (index > -1) {
-    ids.splice(index, 1);
-  }
-  messageById.delete(id);
-  return {
-    success: true,
-  };
+const updateMessage = (id, title, content) => {
+  messagesById.set(id, new Message(id, title, content));
 };
 
-// initial data
-addMessage({ title: 'JavaScript', content: 'Learn JavaScript' });
-addMessage({ title: 'TypeScript', content: 'Learn TypeScript' });
+const removeMessage = (id) => {
+  const messageIds = messageIdsByUser.get(USER_ID);
+  messageIds.splice(messageIds.indexOf(id), 1);
+  messagesById.delete(id);
+};
+
+addMessage('JavaScript', 'Learn JavaScript');
+addMessage('TypeScript', 'Learn TypeScript');
 
 module.exports = {
+  Message,
+  User,
   USER_ID,
   getUser,
   getMessage,
+  getMessages,
   addMessage,
   updateMessage,
   removeMessage,

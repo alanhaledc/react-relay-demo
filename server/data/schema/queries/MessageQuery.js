@@ -1,10 +1,13 @@
-const { GraphQLNonNull } = require('graphql');
+const { GraphQLNonNull, GraphQLString } = require('graphql');
 const { getMessage } = require('../../database');
 const { GraphQLMessage } = require('../nodes');
 
 const MessageQuery = {
   type: new GraphQLNonNull(GraphQLMessage),
-  resolve: ({ userId, id }) => getMessage({ userId, id }),
+  args: {
+    id: { type: GraphQLString },
+  },
+  resolve: (root = {}, { id }) => getMessage(id),
 };
 
 module.exports = {
