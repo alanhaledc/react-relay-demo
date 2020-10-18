@@ -18,7 +18,7 @@ const Message = ({ relay, user, message }) => {
   const updateMessage = () => {
     updateMessageMutationCommit(relay.environment, {
       user,
-      id: message.id,
+      message,
       title,
       content,
     });
@@ -33,7 +33,7 @@ const Message = ({ relay, user, message }) => {
   };
 
   return (
-    <li key={message.id}>
+    <li>
       <h3>{title}</h3>
       <p>{content}</p>
       <button onClick={openEdit}>edit</button>
@@ -56,6 +56,12 @@ const Message = ({ relay, user, message }) => {
   );
 };
 export default createFragmentContainer(Message, {
+  user: graphql`
+    fragment Message_user on User {
+      id
+      userId
+    }
+  `,
   message: graphql`
     fragment Message_message on Message {
       id

@@ -2,15 +2,10 @@ import { commitMutation } from 'react-relay';
 import graphql from 'babel-plugin-relay/macro';
 
 const mutation = graphql`
-  mutation UpdateMessageMutation($input: UpdateMessageInput) {
+  mutation UpdateMessageMutation($input: UpdateMessageInput!) {
     updateMessage(input: $input) {
       user {
-        userId
-        messageList {
-          id
-          title
-          content
-        }
+        id
       }
       message {
         id
@@ -21,10 +16,10 @@ const mutation = graphql`
   }
 `;
 
-const commit = (environment, { id, user, title, content }) => {
+const commit = (environment, { user, message, title, content }) => {
   const input = {
     userId: user.userId,
-    id,
+    id: message.id,
     title,
     content,
   };

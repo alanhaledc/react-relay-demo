@@ -3,36 +3,34 @@ import graphql from 'babel-plugin-relay/macro';
 import { ConnectionHandler } from 'relay-runtime';
 
 const mutation = graphql`
-  mutation AddMessageMutation($input: AddMessageInput) {
+  mutation AddMessageMutation($input: AddMessageInput!) {
     addMessage(input: $input) {
       user {
-        userId
-        messageList {
+        id
+      }
+      messageEdge {
+        __typename
+        cursor
+        node {
           id
           title
           content
         }
       }
-      message {
-        id
-        title
-        content
-      }
     }
   }
 `;
 
-const sharedUpdater = (store, user, newMessage) => {
-  const userProxy = store.getRootField('addMessage').getLinkedRecord('user');
+const sharedUpdater = (store, user, newEdge) => {
+  const userProxy = store.get(user.id);
   const conn = ConnectionHandler.getConnection(
     userProxy,
-    'MessageList_messageList'
+    'MessageList_messages'
   );
-  ConnectionHandler.insertEdgeAfter(conn, newMessage);
+  ConnectionHandler.insertEdgeAfter(conn, newEdge);
 };
 
 const commit = (environment, { user, title, content }) => {
-  console.log('user', user);
   const input = {
     userId: user.userId,
     title,
@@ -43,8 +41,8 @@ const commit = (environment, { user, title, content }) => {
     variables: { input },
     updater: (store) => {
       const payload = store.getRootField('addMessage');
-      const newMessage = payload.getLinkedRecord('message');
-      sharedUpdater(store, user, newMessage);
+      const newEdge = payload.getLinkedRecord('messageEdge');
+      sharedUpdater(store, user, newEdge);
     },
   });
 };
